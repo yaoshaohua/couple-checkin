@@ -1,158 +1,175 @@
 <template>
   <view class="container">
-    <!-- 顶部欢迎区域 -->
-    <view class="welcome-card card">
-      <view class="welcome-text">
-        <text class="greeting">Hi~ {{ userInfo.myName }} & {{ userInfo.partnerName }}</text>
-        <text class="subtitle">记录每一个爱的瞬间 💕</text>
+    <!-- 顶部欢迎区域 - 全新设计 -->
+    <view class="welcome-card">
+      <view class="welcome-bg">
+        <view class="bubble bubble-1"></view>
+        <view class="bubble bubble-2"></view>
+        <view class="bubble bubble-3"></view>
+        <view class="star star-1">✦</view>
+        <view class="star star-2">✧</view>
+        <view class="star star-3">✦</view>
+      </view>
+      <view class="welcome-content">
+        <view class="wedding-days">
+          <text class="days-number">{{ marriedDays }}</text>
+          <text class="days-unit">天</text>
+        </view>
+        <text class="greeting">我们结婚啦 💕</text>
+        <text class="subtitle">✨ {{ weddingDate }} - 至今 ✨</text>
+        <view class="date-badge">
+          <text class="date-icon">📅</text>
+          <text class="date-text">{{ currentDate }}</text>
+        </view>
       </view>
     </view>
 
-    <!-- 积分展示区域 -->
+    <!-- 积分展示区域 - 3D卡片设计 -->
     <view class="score-container">
-      <view class="score-card love-card card">
-        <view class="score-icon">❤️</view>
-        <view class="score-info">
-          <text class="score-label">爱意积分</text>
-          <text class="score-value">{{ loveScore }}</text>
-        </view>
-        <view class="score-tip">+{{ loveScore * 10 }} 甜蜜值</view>
-      </view>
-
-      <view class="score-card resent-card card">
-        <view class="score-icon">😤</view>
-        <view class="score-info">
-          <text class="score-label">怨气积分</text>
-          <text class="score-value">{{ resentScore }}</text>
-        </view>
-        <view class="score-tip">可兑换任务</view>
-      </view>
-    </view>
-
-    <!-- 快捷打卡区域 -->
-    <view class="checkin-section card">
-      <view class="section-title">
-        <text>快捷打卡</text>
-        <text class="section-subtitle">记录此刻的心情</text>
-      </view>
-
-      <view class="checkin-type">
-        <text class="type-title">❤️ 开心时刻</text>
-        <view class="checkin-btns">
-          <view 
-            v-for="item in loveOptions" 
-            :key="item.value"
-            class="checkin-btn love-btn"
-            @click="handleCheckin('love', item)"
-          >
-            <text class="btn-icon">{{ item.icon }}</text>
-            <text class="btn-text">{{ item.label }}</text>
+      <view class="score-card love-card">
+        <view class="card-glow love-glow"></view>
+        <view class="card-inner">
+          <view class="icon-circle love-circle">
+            <text class="big-icon">❤️</text>
+          </view>
+          <view class="score-info">
+            <text class="score-label">爱意值</text>
+            <text class="score-number love-number">{{ loveScore }}</text>
           </view>
         </view>
       </view>
 
-      <view class="checkin-type">
-        <text class="type-title">😤 生气时刻</text>
-        <view class="checkin-btns">
-          <view 
-            v-for="item in resentOptions" 
-            :key="item.value"
-            class="checkin-btn resent-btn"
-            @click="handleCheckin('resent', item)"
-          >
-            <text class="btn-icon">{{ item.icon }}</text>
-            <text class="btn-text">{{ item.label }}</text>
+      <view class="score-card resent-card">
+        <view class="card-glow resent-glow"></view>
+        <view class="card-inner">
+          <view class="icon-circle resent-circle">
+            <text class="big-icon">😤</text>
           </view>
-        </view>
-      </view>
-
-      <view class="custom-checkin" @click="showCustomDialog">
-        <text class="custom-icon">✏️</text>
-        <text class="custom-text">自定义打卡</text>
-      </view>
-    </view>
-
-    <!-- 最近记录 -->
-    <view class="recent-section card">
-      <view class="section-title">
-        <text>最近记录</text>
-        <text class="more-btn" @click="goToRecord">查看全部 →</text>
-      </view>
-      
-      <view v-if="recentRecords.length === 0" class="empty-tip">
-        <text>暂无记录，快去打卡吧~</text>
-      </view>
-      
-      <view v-else class="record-list">
-        <view 
-          v-for="record in recentRecords" 
-          :key="record.id"
-          class="record-item"
-        >
-          <view class="record-icon">{{ record.type === 'love' ? '❤️' : '😤' }}</view>
-          <view class="record-content">
-            <text class="record-reason">{{ record.reason }}</text>
-            <text class="record-time">{{ formatTime(record.time) }}</text>
-          </view>
-          <view :class="['record-score', record.type === 'love' ? 'love-score' : 'resent-score']">
-            +{{ record.score }}
+          <view class="score-info">
+            <text class="score-label">怨气值</text>
+            <text class="score-number resent-number">{{ resentScore }}</text>
           </view>
         </view>
       </view>
     </view>
 
-    <!-- 自定义打卡弹窗 -->
-    <view v-if="showDialog" class="dialog-mask" @click="hideDialog">
-      <view class="dialog-content" @click.stop>
-        <view class="dialog-title">自定义打卡</view>
-        
-        <view class="dialog-form">
-          <view class="form-item">
-            <text class="form-label">类型</text>
-            <view class="radio-group">
-              <view 
-                :class="['radio-item', customType === 'love' ? 'active' : '']"
-                @click="customType = 'love'"
-              >
-                ❤️ 爱意
+    <!-- 快捷操作按钮 - 可爱卡通风格 -->
+    <view class="action-buttons">
+      <view class="action-btn love-btn" @click="quickLove">
+        <view class="btn-bg">
+          <view class="floating-icon icon-1">✨</view>
+          <view class="floating-icon icon-2">💫</view>
+          <view class="floating-icon icon-3">⭐</view>
+        </view>
+        <view class="btn-content">
+          <view class="btn-icon-wrap">
+            <text class="btn-emoji">❤️</text>
+          </view>
+          <text class="btn-title">开心打卡</text>
+          <text class="btn-desc">记录甜蜜时刻</text>
+        </view>
+      </view>
+
+      <view class="action-btn resent-btn" @click="quickResent">
+        <view class="btn-bg">
+          <view class="floating-icon icon-1">💨</view>
+          <view class="floating-icon icon-2">💢</view>
+          <view class="floating-icon icon-3">💭</view>
+        </view>
+        <view class="btn-content">
+          <view class="btn-icon-wrap">
+            <text class="btn-emoji">😤</text>
+          </view>
+          <text class="btn-title">生气记录</text>
+          <text class="btn-desc">吐槽一下嘛</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部导航提示 - 可爱风格 -->
+    <view class="bottom-hint">
+      <view class="hint-card">
+        <text class="hint-icon">👇</text>
+        <text class="hint-text">点击底部菜单查看更多功能哦</text>
+      </view>
+    </view>
+
+    <!-- 自定义打卡弹窗 - 可爱风格 -->
+    <view v-if="showDialog" class="modal-overlay" @click="hideDialog">
+      <view class="modal-wrapper" @click.stop>
+        <view class="modal-card">
+          <view class="modal-header">
+            <text class="modal-title">💝 自定义打卡</text>
+            <view class="close-btn" @click="hideDialog">
+              <text class="close-icon">✕</text>
+            </view>
+          </view>
+          
+          <view class="modal-body">
+            <view class="input-group">
+              <view class="cute-label">
+                <text class="label-text">选择类型</text>
               </view>
-              <view 
-                :class="['radio-item', customType === 'resent' ? 'active' : '']"
-                @click="customType = 'resent'"
-              >
-                😤 怨气
+              <view class="type-selector">
+                <view 
+                  :class="getTypeItemClass('love')"
+                  @click="setCustomType('love')"
+                >
+                  <text class="type-emoji">❤️</text>
+                  <text class="type-name">开心</text>
+                </view>
+                <view 
+                  :class="getTypeItemClass('resent')"
+                  @click="setCustomType('resent')"
+                >
+                  <text class="type-emoji">😤</text>
+                  <text class="type-name">生气</text>
+                </view>
+              </view>
+            </view>
+
+            <view class="input-group">
+              <view class="cute-label">
+                <text class="label-text">记录原因</text>
+              </view>
+              <view class="textarea-wrapper">
+                <textarea 
+                  v-model="customReason" 
+                  class="reason-input" 
+                  placeholder="说说发生了什么..."
+                  placeholder-class="input-placeholder"
+                  maxlength="50"
+                  :auto-height="true"
+                />
+                <text class="char-count">{{ customReason.length }}/50</text>
+              </view>
+            </view>
+
+            <view class="input-group">
+              <view class="cute-label">
+                <text class="label-text">选择积分</text>
+              </view>
+              <view class="score-grid">
+                <view 
+                  v-for="s in [1, 2, 3, 5, 10]" 
+                  :key="s"
+                  :class="getScoreItemClass(s)"
+                  @click="setCustomScore(s)"
+                >
+                  <text class="score-value">{{ s }}</text>
+                </view>
               </view>
             </view>
           </view>
 
-          <view class="form-item">
-            <text class="form-label">原因</text>
-            <input 
-              v-model="customReason" 
-              class="form-input" 
-              placeholder="说说发生了什么..."
-              maxlength="30"
-            />
-          </view>
-
-          <view class="form-item">
-            <text class="form-label">积分</text>
-            <view class="score-picker">
-              <view 
-                v-for="s in [1, 2, 3, 5, 10]" 
-                :key="s"
-                :class="['score-option', customScore === s ? 'active' : '']"
-                @click="customScore = s"
-              >
-                {{ s }}
-              </view>
+          <view class="modal-footer">
+            <view class="footer-btn cancel" @click="hideDialog">
+              <text class="btn-text">取消</text>
+            </view>
+            <view class="footer-btn confirm" @click="confirmCustomCheckin">
+              <text class="btn-text">✨ 确定打卡</text>
             </view>
           </view>
-        </view>
-
-        <view class="dialog-btns">
-          <button class="dialog-btn cancel-btn" @click="hideDialog">取消</button>
-          <button class="dialog-btn confirm-btn" @click="confirmCustomCheckin">确定</button>
         </view>
       </view>
     </view>
@@ -161,23 +178,10 @@
 
 <script>
 import { mapState } from 'vuex'
-import { formatRelativeTime } from '../../utils/index'
 
 export default {
   data() {
     return {
-      loveOptions: [
-        { icon: '😊', label: '小开心', value: 'small_happy', score: 1 },
-        { icon: '😍', label: '很开心', value: 'happy', score: 2 },
-        { icon: '🥰', label: '超开心', value: 'super_happy', score: 3 },
-        { icon: '💝', label: '收到礼物', value: 'gift', score: 5 }
-      ],
-      resentOptions: [
-        { icon: '😠', label: '小生气', value: 'small_angry', score: 1 },
-        { icon: '😡', label: '很生气', value: 'angry', score: 2 },
-        { icon: '🤬', label: '超生气', value: 'super_angry', score: 3 },
-        { icon: '💢', label: '吵架了', value: 'fight', score: 5 }
-      ],
       showDialog: false,
       customType: 'love',
       customReason: '',
@@ -186,30 +190,101 @@ export default {
   },
 
   computed: {
-    ...mapState(['loveScore', 'resentScore', 'records', 'userInfo']),
+    ...mapState(['loveScore', 'resentScore', 'userInfo']),
     
-    recentRecords() {
-      return this.records.slice(0, 5)
+    marriedDays() {
+      const weddingDate = new Date('2025-06-07')
+      const today = new Date()
+      const diffTime = today - weddingDate
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
+      return diffDays >= 0 ? diffDays : 0
+    },
+    
+    weddingDate() {
+      return '2025.06.07'
+    },
+    
+    currentDate() {
+      const date = new Date()
+      const month = date.getMonth() + 1
+      const day = date.getDate()
+      const weekDays = ['日', '一', '二', '三', '四', '五', '六']
+      const weekDay = weekDays[date.getDay()]
+      return `${month}月${day}日 星期${weekDay}`
     }
   },
 
   methods: {
-    handleCheckin(type, item) {
-      const action = type === 'love' ? 'addLoveScore' : 'addResentScore'
-      
-      this.$store.dispatch(action, {
-        score: item.score,
-        reason: item.label
+    getTypeItemClass(type) {
+      return this.customType === type ? 'type-item active' : 'type-item'
+    },
+    
+    setCustomType(type) {
+      this.customType = type
+    },
+    
+    getScoreItemClass(score) {
+      return this.customScore === score ? 'score-item active' : 'score-item'
+    },
+    
+    setCustomScore(score) {
+      this.customScore = score
+    },
+    
+    quickLove() {
+      uni.showModal({
+        title: '开心时刻 💕',
+        editable: true,
+        placeholderText: '说说为什么开心...',
+        content: '',
+        confirmText: '确定',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            const reason = res.content && res.content.trim() ? res.content : '开心打卡'
+            
+            this.$store.dispatch('addLoveScore', {
+              score: 1,
+              reason: reason
+            })
+            
+            uni.showToast({
+              title: '❤️ +1',
+              icon: 'none',
+              duration: 1000
+            })
+            uni.vibrateShort()
+          }
+        }
       })
-
-      uni.showToast({
-        title: `${item.icon} ${item.label} +${item.score}`,
-        icon: 'none',
-        duration: 1500
+    },
+    
+    quickResent() {
+      uni.showModal({
+        title: '生气时刻 😤',
+        editable: true,
+        placeholderText: '说说为什么生气...',
+        content: '',
+        confirmText: '确定',
+        cancelText: '取消',
+        success: (res) => {
+          if (res.confirm) {
+            const reason = res.content && res.content.trim() ? res.content : '生气记录'
+            
+            this.$store.dispatch('addResentScore', {
+              score: 1,
+              reason: reason
+            })
+            
+            uni.showToast({
+              title: '😤 +1',
+              icon: 'none',
+              duration: 1000
+            })
+            uni.vibrateShort()
+          }
+        }
       })
-
-      // 添加震动反馈
-      uni.vibrateShort()
     },
 
     showCustomDialog() {
@@ -240,383 +315,775 @@ export default {
       })
 
       uni.showToast({
-        title: '打卡成功',
+        title: '✨ 打卡成功',
         icon: 'success'
       })
 
       this.hideDialog()
       uni.vibrateShort()
-    },
-
-    formatTime(time) {
-      return formatRelativeTime(time)
-    },
-
-    goToRecord() {
-      uni.switchTab({
-        url: '/pages/record/record'
-      })
     }
   }
 }
 </script>
 
 <style scoped>
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFE8F0 0%, #FFF5F8 30%, #FFFBFC 100%);
+  padding-bottom: 120rpx;
+}
+
+/* 顶部欢迎卡片 - 可爱卡通风格 */
 .welcome-card {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  position: relative;
+  height: 460rpx;
+  margin: 24rpx 28rpx 32rpx;
+  border-radius: 40rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #FF6B9D 0%, #FF9EC4 100%);
+  box-shadow: 0 16rpx 48rpx rgba(255, 107, 157, 0.3);
+}
+
+.welcome-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  animation: bubble 10s ease-in-out infinite;
+}
+
+.bubble-1 {
+  width: 160rpx;
+  height: 160rpx;
+  top: -40rpx;
+  right: 30rpx;
+  animation-delay: 0s;
+}
+
+.bubble-2 {
+  width: 100rpx;
+  height: 100rpx;
+  bottom: 40rpx;
+  left: 20rpx;
+  animation-delay: 3s;
+}
+
+.bubble-3 {
+  width: 80rpx;
+  height: 80rpx;
+  top: 120rpx;
+  right: 100rpx;
+  animation-delay: 6s;
+}
+
+.star {
+  position: absolute;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 40rpx;
+  animation: twinkle 2.5s ease-in-out infinite;
+}
+
+.star-1 {
+  top: 50rpx;
+  left: 60rpx;
+  animation-delay: 0s;
+}
+
+.star-2 {
+  bottom: 100rpx;
+  right: 80rpx;
+  font-size: 32rpx;
+  animation-delay: 1s;
+}
+
+.star-3 {
+  top: 140rpx;
+  left: 140rpx;
+  font-size: 28rpx;
+  animation-delay: 2s;
+}
+
+@keyframes bubble {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(-15rpx, -20rpx) scale(1.15);
+    opacity: 0.2;
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1) rotate(0deg);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.3) rotate(10deg);
+  }
+}
+
+.welcome-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40rpx;
+}
+
+.wedding-days {
+  display: flex;
+  align-items: baseline;
+  gap: 12rpx;
+  margin-bottom: 18rpx;
+}
+
+.days-number {
+  font-size: 110rpx;
+  font-weight: 900;
   color: #ffffff;
-  text-align: center;
-  padding: 40rpx 30rpx;
+  font-family: 'DIN Alternate', 'Helvetica', sans-serif;
+  text-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.2);
+  line-height: 1;
+  letter-spacing: -4rpx;
+}
+
+.days-unit {
+  font-size: 44rpx;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.95);
+  text-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.15);
 }
 
 .greeting {
-  font-size: 36rpx;
-  font-weight: bold;
-  display: block;
-  margin-bottom: 10rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 12rpx;
+  text-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
+  letter-spacing: 3rpx;
 }
 
 .subtitle {
-  font-size: 24rpx;
-  opacity: 0.9;
-  display: block;
+  font-size: 22rpx;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 20rpx;
+  letter-spacing: 1rpx;
 }
 
+.date-badge {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  padding: 14rpx 28rpx;
+  background: rgba(255, 255, 255, 0.25);
+  border-radius: 50rpx;
+  backdrop-filter: blur(20rpx);
+  border: 2rpx solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 4rpx 20rpx rgba(0, 0, 0, 0.1);
+}
+
+.date-icon {
+  font-size: 24rpx;
+}
+
+.date-text {
+  font-size: 24rpx;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* 积分卡片 - 可爱卡通风格 */
 .score-container {
   display: flex;
-  gap: 20rpx;
-  margin: 20rpx 0;
+  gap: 28rpx;
+  margin: 0 28rpx 40rpx;
 }
 
 .score-card {
   flex: 1;
+  position: relative;
+  border-radius: 36rpx;
+  overflow: visible;
+}
+
+.card-glow {
+  position: absolute;
+  top: -60%;
+  left: -60%;
+  right: -60%;
+  bottom: -60%;
+  opacity: 0.5;
+  filter: blur(50rpx);
+  z-index: 0;
+}
+
+.love-glow {
+  background: radial-gradient(circle, rgba(255, 107, 157, 0.5) 0%, transparent 70%);
+}
+
+.resent-glow {
+  background: radial-gradient(circle, rgba(100, 181, 246, 0.5) 0%, transparent 70%);
+}
+
+.card-inner {
+  position: relative;
+  z-index: 1;
+  background: #ffffff;
+  padding: 36rpx 28rpx;
+  border-radius: 36rpx;
+  box-shadow: 0 12rpx 36rpx rgba(0, 0, 0, 0.1);
+  border: 4rpx solid rgba(255, 107, 157, 0.1);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 30rpx 20rpx;
+  gap: 24rpx;
 }
 
-.love-card {
-  background: linear-gradient(135deg, #FFE5EE 0%, #FFF0F5 100%);
+.resent-card .card-inner {
+  border-color: rgba(100, 181, 246, 0.1);
 }
 
-.resent-card {
-  background: linear-gradient(135deg, #E8F4FD 0%, #F0F8FF 100%);
+.icon-circle {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  position: relative;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.12);
+  animation: bounce 2s ease-in-out infinite;
 }
 
-.score-icon {
-  font-size: 60rpx;
-  margin-bottom: 10rpx;
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8rpx);
+  }
+}
+
+.love-circle {
+  background: linear-gradient(135deg, #FFD6E7 0%, #FFC1DC 100%);
+}
+
+.resent-circle {
+  background: linear-gradient(135deg, #D4EDFC 0%, #C1E5FC 100%);
+}
+
+.big-icon {
+  font-size: 48rpx;
+  z-index: 1;
 }
 
 .score-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 10rpx;
+  gap: 8rpx;
 }
 
 .score-label {
   font-size: 24rpx;
-  color: #666666;
-  margin-bottom: 5rpx;
-}
-
-.score-value {
-  font-size: 48rpx;
-  font-weight: bold;
-  color: #FF6B9D;
-}
-
-.resent-card .score-value {
-  color: #1890FF;
-}
-
-.score-tip {
-  font-size: 20rpx;
   color: #999999;
+  font-weight: 600;
 }
 
-.checkin-section {
-  margin: 20rpx 0;
+.score-number {
+  font-size: 72rpx;
+  font-weight: 900;
+  font-family: 'DIN Alternate', 'Helvetica', sans-serif;
+  line-height: 1;
 }
 
-.section-title {
+.love-number {
+  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.resent-number {
+  background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* 快捷操作按钮 - 超可爱卡通风格 */
+.action-buttons {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20rpx;
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333333;
+  flex-direction: column;
+  gap: 28rpx;
+  margin: 0 28rpx 40rpx;
 }
 
-.section-subtitle {
-  font-size: 24rpx;
-  color: #999999;
-  font-weight: normal;
+.action-btn {
+  position: relative;
+  height: 180rpx;
+  border-radius: 36rpx;
+  overflow: hidden;
+  box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.12);
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.more-btn {
-  font-size: 24rpx;
-  color: #FF6B9D;
-  font-weight: normal;
-}
-
-.checkin-type {
-  margin-bottom: 30rpx;
-}
-
-.type-title {
-  font-size: 28rpx;
-  color: #333333;
-  font-weight: 500;
-  display: block;
-  margin-bottom: 15rpx;
-}
-
-.checkin-btns {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15rpx;
-}
-
-.checkin-btn {
-  flex: 0 0 calc(50% - 7.5rpx);
-  display: flex;
-  align-items: center;
-  padding: 20rpx;
-  border-radius: 15rpx;
-  transition: all 0.3s;
+.action-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.15);
 }
 
 .love-btn {
-  background: #FFE5EE;
-}
-
-.love-btn:active {
-  background: #FFD1E0;
-  transform: scale(0.98);
+  background: linear-gradient(135deg, #FF6B9D 0%, #FFA9CE 50%, #FFB6D9 100%);
 }
 
 .resent-btn {
-  background: #E8F4FD;
+  background: linear-gradient(135deg, #64B5F6 0%, #90CAF9 50%, #A5D6FA 100%);
 }
 
-.resent-btn:active {
-  background: #D0E8FA;
-  transform: scale(0.98);
+.btn-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 
-.btn-icon {
-  font-size: 40rpx;
-  margin-right: 15rpx;
+.floating-icon {
+  position: absolute;
+  font-size: 48rpx;
+  opacity: 0.2;
+  animation: float-icon 4s ease-in-out infinite;
 }
 
-.btn-text {
-  font-size: 28rpx;
-  color: #333333;
+.icon-1 {
+  top: 20rpx;
+  right: 40rpx;
+  animation-delay: 0s;
 }
 
-.custom-checkin {
+.icon-2 {
+  bottom: 30rpx;
+  left: 50rpx;
+  animation-delay: 1.5s;
+}
+
+.icon-3 {
+  top: 80rpx;
+  left: 25%;
+  font-size: 36rpx;
+  animation-delay: 3s;
+}
+
+@keyframes float-icon {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0.2;
+  }
+  50% {
+    transform: translateY(-15rpx) rotate(10deg);
+    opacity: 0.3;
+  }
+}
+
+.btn-content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 40rpx;
+  gap: 32rpx;
+}
+
+.btn-icon-wrap {
+  width: 100rpx;
+  height: 100rpx;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(10rpx);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 25rpx;
-  background: linear-gradient(135deg, #F5F5F5 0%, #FAFAFA 100%);
-  border-radius: 15rpx;
-  border: 2rpx dashed #CCCCCC;
-  margin-top: 20rpx;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.15);
+  border: 4rpx solid rgba(255, 255, 255, 0.5);
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.custom-icon {
-  font-size: 32rpx;
-  margin-right: 10rpx;
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
-.custom-text {
-  font-size: 28rpx;
-  color: #666666;
+.btn-emoji {
+  font-size: 56rpx;
 }
 
-.recent-section {
-  margin: 20rpx 0;
+.btn-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #ffffff;
+  text-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.2);
+  letter-spacing: 2rpx;
+  margin-bottom: 8rpx;
+  display: block;
 }
 
-.empty-tip {
-  text-align: center;
-  padding: 60rpx 0;
-  color: #999999;
-  font-size: 28rpx;
+.btn-desc {
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  display: block;
 }
 
-.record-list {
-  display: flex;
-  flex-direction: column;
-  gap: 15rpx;
+/* 底部提示 - 可爱风格 */
+.bottom-hint {
+  margin: 0 28rpx 40rpx;
 }
 
-.record-item {
+.hint-card {
   display: flex;
   align-items: center;
-  padding: 20rpx;
-  background: #F8F8F8;
-  border-radius: 12rpx;
+  justify-content: center;
+  gap: 12rpx;
+  padding: 24rpx;
+  background: #ffffff;
+  border-radius: 32rpx;
+  box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.08);
+  border: 3rpx dashed #FFD6E7;
 }
 
-.record-icon {
-  font-size: 40rpx;
-  margin-right: 15rpx;
+.hint-icon {
+  font-size: 32rpx;
+  animation: point 1.5s ease-in-out infinite;
 }
 
-.record-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+@keyframes point {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8rpx);
+  }
 }
 
-.record-reason {
-  font-size: 28rpx;
-  color: #333333;
-  margin-bottom: 5rpx;
-}
-
-.record-time {
-  font-size: 22rpx;
+.hint-text {
+  font-size: 26rpx;
   color: #999999;
+  font-weight: 600;
 }
 
-.record-score {
-  font-size: 28rpx;
-  font-weight: bold;
-}
-
-.love-score {
-  color: #FF6B9D;
-}
-
-.resent-score {
-  color: #1890FF;
-}
-
-/* 弹窗样式 */
-.dialog-mask {
+/* 弹窗样式 - 超可爱风格 */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 1000;
+  animation: overlay-in 0.3s ease-out;
+  backdrop-filter: blur(6rpx);
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-wrapper {
+  width: 100%;
+  animation: modal-up 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.modal-card {
+  background: #ffffff;
+  border-radius: 40rpx 40rpx 0 0;
+  overflow: hidden;
+}
+
+.modal-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  padding: 36rpx 80rpx;
+  background: linear-gradient(135deg, #FFF8FA 0%, #FFF0F5 100%);
+  border-bottom: 2rpx solid #FFE8F0;
 }
 
-.dialog-content {
-  width: 600rpx;
+.modal-title {
+  font-size: 36rpx;
+  font-weight: 800;
+  color: #FF6B9D;
+  letter-spacing: 2rpx;
+}
+
+.close-btn {
+  position: absolute;
+  right: 28rpx;
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 50%;
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
 }
 
-.dialog-title {
+.close-btn:active {
+  transform: scale(0.88) rotate(90deg);
+  background: #F8F8F8;
+}
+
+.close-icon {
   font-size: 32rpx;
-  font-weight: bold;
+  color: #999999;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.modal-body {
+  padding: 36rpx 32rpx;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+.input-group {
+  margin-bottom: 36rpx;
+}
+
+.input-group:last-child {
+  margin-bottom: 0;
+}
+
+.cute-label {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20rpx;
+  padding-left: 8rpx;
+}
+
+.label-text {
+  font-size: 28rpx;
+  font-weight: 700;
   color: #333333;
-  text-align: center;
-  margin-bottom: 30rpx;
 }
 
-.dialog-form {
-  margin-bottom: 30rpx;
-}
-
-.form-item {
-  margin-bottom: 30rpx;
-}
-
-.form-label {
-  font-size: 28rpx;
-  color: #333333;
-  display: block;
-  margin-bottom: 15rpx;
-}
-
-.radio-group {
-  display: flex;
-  gap: 15rpx;
-}
-
-.radio-item {
-  flex: 1;
-  text-align: center;
-  padding: 20rpx;
-  background: #F5F5F5;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  color: #666666;
-  border: 2rpx solid transparent;
-}
-
-.radio-item.active {
-  background: #FFE5EE;
-  color: #FF6B9D;
-  border-color: #FF6B9D;
-}
-
-.form-input {
-  width: 100%;
-  padding: 20rpx;
-  background: #F5F5F5;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-}
-
-.score-picker {
-  display: flex;
-  gap: 15rpx;
-}
-
-.score-option {
-  flex: 1;
-  text-align: center;
-  padding: 20rpx;
-  background: #F5F5F5;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  color: #666666;
-  border: 2rpx solid transparent;
-}
-
-.score-option.active {
-  background: #FFE5EE;
-  color: #FF6B9D;
-  border-color: #FF6B9D;
-  font-weight: bold;
-}
-
-.dialog-btns {
-  display: flex;
+.type-selector {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 20rpx;
 }
 
-.dialog-btn {
-  flex: 1;
-  padding: 25rpx;
-  border-radius: 50rpx;
-  font-size: 28rpx;
-  border: none;
+.type-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16rpx;
+  padding: 36rpx 24rpx;
+  background: #F8F8F8;
+  border-radius: 28rpx;
+  border: 4rpx solid transparent;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.cancel-btn {
-  background: #F5F5F5;
+.type-item:active {
+  transform: scale(0.92);
+}
+
+.type-item.active {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FFE5EE 100%);
+  border-color: #FF6B9D;
+  box-shadow: 0 12rpx 32rpx rgba(255, 107, 157, 0.2);
+  transform: scale(1.03);
+}
+
+.type-emoji {
+  font-size: 56rpx;
+  animation: emoji-bounce 2s ease-in-out infinite;
+}
+
+@keyframes emoji-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6rpx);
+  }
+}
+
+.type-name {
+  font-size: 28rpx;
+  font-weight: 700;
   color: #666666;
 }
 
-.confirm-btn {
+.type-item.active .type-name {
+  color: #FF6B9D;
+}
+
+.textarea-wrapper {
+  position: relative;
+  background: #F8F8F8;
+  border-radius: 28rpx;
+  border: 4rpx solid transparent;
+  transition: all 0.3s;
+  min-height: 160rpx;
+}
+
+.textarea-wrapper:focus-within {
+  background: #ffffff;
+  border-color: #FF6B9D;
+  box-shadow: 0 6rpx 20rpx rgba(255, 107, 157, 0.15);
+}
+
+.reason-input {
+  width: 100%;
+  min-height: 140rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: #333333;
+  box-sizing: border-box;
+  background: transparent;
+  line-height: 1.6;
+}
+
+.input-placeholder {
+  color: #CCCCCC;
+}
+
+.char-count {
+  position: absolute;
+  right: 24rpx;
+  bottom: 20rpx;
+  font-size: 22rpx;
+  color: #CCCCCC;
+  font-weight: 600;
+}
+
+.score-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16rpx;
+}
+
+.score-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32rpx 16rpx;
+  background: #F8F8F8;
+  border-radius: 24rpx;
+  border: 4rpx solid transparent;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.score-item:active {
+  transform: scale(0.88);
+}
+
+.score-item.active {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FFE5EE 100%);
+  border-color: #FF6B9D;
+  box-shadow: 0 10rpx 28rpx rgba(255, 107, 157, 0.2);
+  transform: scale(1.08);
+}
+
+.score-value {
+  font-size: 40rpx;
+  font-weight: 900;
+  color: #666666;
+  font-family: 'DIN Alternate', sans-serif;
+  line-height: 1;
+}
+
+.score-item.active .score-value {
   background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 20rpx;
+  padding: 28rpx 32rpx;
+  padding-bottom: calc(28rpx + env(safe-area-inset-bottom));
+  background: linear-gradient(135deg, #FFF8FA 0%, #FFF0F5 100%);
+  border-top: 2rpx solid #FFE8F0;
+}
+
+.footer-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  border-radius: 50rpx;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.footer-btn:active {
+  transform: scale(0.94);
+}
+
+.cancel {
+  background: #ffffff;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.08);
+  border: 3rpx solid #F5F5F5;
+}
+
+.cancel .btn-text {
+  color: #999999;
+  font-weight: 700;
+}
+
+.confirm {
+  background: linear-gradient(135deg, #FF6B9D 0%, #FFA9CE 100%);
+  box-shadow: 0 12rpx 32rpx rgba(255, 107, 157, 0.4);
+}
+
+.confirm .btn-text {
   color: #ffffff;
+}
+
+.btn-text {
+  font-size: 30rpx;
+  font-weight: 800;
+  letter-spacing: 1rpx;
 }
 </style>
