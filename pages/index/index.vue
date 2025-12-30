@@ -30,7 +30,7 @@
         <view class="card-glow love-glow"></view>
         <view class="card-inner">
           <view class="icon-circle love-circle">
-            <text class="big-icon">❤️</text>
+            <image src="/static/images/happy.png" class="big-icon-img" mode="aspectFit"></image>
           </view>
           <view class="score-info">
             <text class="score-label">爱意值</text>
@@ -43,7 +43,7 @@
         <view class="card-glow resent-glow"></view>
         <view class="card-inner">
           <view class="icon-circle resent-circle">
-            <text class="big-icon">😤</text>
+            <image src="/static/images/sad.png" class="big-icon-img" mode="aspectFit"></image>
           </view>
           <view class="score-info">
             <text class="score-label">怨气值</text>
@@ -63,7 +63,7 @@
         </view>
         <view class="btn-content">
           <view class="btn-icon-wrap">
-            <text class="btn-emoji">❤️</text>
+            <image src="/static/images/happy-active.png" class="btn-emoji-img" mode="aspectFit"></image>
           </view>
           <text class="btn-title">开心打卡</text>
           <text class="btn-desc">记录甜蜜时刻</text>
@@ -78,7 +78,7 @@
         </view>
         <view class="btn-content">
           <view class="btn-icon-wrap">
-            <text class="btn-emoji">😤</text>
+            <image src="/static/images/sad-active.png" class="btn-emoji-img" mode="aspectFit"></image>
           </view>
           <text class="btn-title">生气记录</text>
           <text class="btn-desc">吐槽一下嘛</text>
@@ -115,14 +115,14 @@
                   :class="getTypeItemClass('love')"
                   @click="setCustomType('love')"
                 >
-                  <text class="type-emoji">❤️</text>
+                  <image src="/static/images/happy-active.png" class="type-emoji-img" mode="aspectFit"></image>
                   <text class="type-name">开心</text>
                 </view>
                 <view 
                   :class="getTypeItemClass('resent')"
                   @click="setCustomType('resent')"
                 >
-                  <text class="type-emoji">😤</text>
+                  <image src="/static/images/sad-active.png" class="type-emoji-img" mode="aspectFit"></image>
                   <text class="type-name">生气</text>
                 </view>
               </view>
@@ -206,11 +206,12 @@ export default {
     
     currentDate() {
       const date = new Date()
+      const year = date.getFullYear()
       const month = date.getMonth() + 1
       const day = date.getDate()
       const weekDays = ['日', '一', '二', '三', '四', '五', '六']
       const weekDay = weekDays[date.getDay()]
-      return `${month}月${day}日 星期${weekDay}`
+      return `${year}年${month}月${day}日 星期${weekDay}`
     }
   },
 
@@ -331,17 +332,19 @@ export default {
   min-height: 100vh;
   background: linear-gradient(180deg, #FFE8F0 0%, #FFF5F8 30%, #FFFBFC 100%);
   padding-bottom: 120rpx;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* 顶部欢迎卡片 - 可爱卡通风格 */
 .welcome-card {
   position: relative;
-  height: 460rpx;
+  height: 380rpx;
   margin: 24rpx 28rpx 32rpx;
-  border-radius: 40rpx;
+  border-radius: 36rpx;
   overflow: hidden;
   background: linear-gradient(135deg, #FF6B9D 0%, #FF9EC4 100%);
-  box-shadow: 0 16rpx 48rpx rgba(255, 107, 157, 0.3);
+  box-shadow: 0 12rpx 36rpx rgba(255, 107, 157, 0.3);
 }
 
 .welcome-bg {
@@ -439,46 +442,47 @@ export default {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 40rpx;
+  padding: 28rpx 40rpx;
+  box-sizing: border-box;
 }
 
 .wedding-days {
   display: flex;
   align-items: baseline;
-  gap: 12rpx;
-  margin-bottom: 18rpx;
+  gap: 10rpx;
+  margin-bottom: 12rpx;
 }
 
 .days-number {
-  font-size: 110rpx;
+  font-size: 96rpx;
   font-weight: 900;
   color: #ffffff;
   font-family: 'DIN Alternate', 'Helvetica', sans-serif;
   text-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.2);
   line-height: 1;
-  letter-spacing: -4rpx;
+  letter-spacing: -3rpx;
 }
 
 .days-unit {
-  font-size: 44rpx;
+  font-size: 40rpx;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.95);
   text-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.15);
 }
 
 .greeting {
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 700;
   color: #ffffff;
   margin-bottom: 12rpx;
   text-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.15);
-  letter-spacing: 3rpx;
+  letter-spacing: 2rpx;
 }
 
 .subtitle {
-  font-size: 22rpx;
+  font-size: 24rpx;
   color: rgba(255, 255, 255, 0.9);
-  margin-bottom: 20rpx;
+  margin-bottom: 16rpx;
   letter-spacing: 1rpx;
 }
 
@@ -486,7 +490,7 @@ export default {
   display: flex;
   align-items: center;
   gap: 10rpx;
-  padding: 14rpx 28rpx;
+  padding: 12rpx 26rpx;
   background: rgba(255, 255, 255, 0.25);
   border-radius: 50rpx;
   backdrop-filter: blur(20rpx);
@@ -515,18 +519,19 @@ export default {
   flex: 1;
   position: relative;
   border-radius: 36rpx;
-  overflow: visible;
+  overflow: hidden;
 }
 
 .card-glow {
   position: absolute;
-  top: -60%;
-  left: -60%;
-  right: -60%;
-  bottom: -60%;
+  top: -10rpx;
+  left: -10rpx;
+  right: -10rpx;
+  bottom: -10rpx;
   opacity: 0.5;
-  filter: blur(50rpx);
+  filter: blur(40rpx);
   z-index: 0;
+  pointer-events: none;
 }
 
 .love-glow {
@@ -541,13 +546,13 @@ export default {
   position: relative;
   z-index: 1;
   background: #ffffff;
-  padding: 36rpx 28rpx;
+  padding: 48rpx 36rpx;
   border-radius: 36rpx;
   box-shadow: 0 12rpx 36rpx rgba(0, 0, 0, 0.1);
   border: 4rpx solid rgba(255, 107, 157, 0.1);
   display: flex;
   align-items: center;
-  gap: 24rpx;
+  gap: 32rpx;
 }
 
 .resent-card .card-inner {
@@ -555,8 +560,8 @@ export default {
 }
 
 .icon-circle {
-  width: 88rpx;
-  height: 88rpx;
+  width: 110rpx;
+  height: 110rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -585,7 +590,13 @@ export default {
 }
 
 .big-icon {
-  font-size: 48rpx;
+  font-size: 60rpx;
+  z-index: 1;
+}
+
+.big-icon-img {
+  width: 70rpx;
+  height: 70rpx;
   z-index: 1;
 }
 
@@ -593,17 +604,17 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8rpx;
+  gap: 12rpx;
 }
 
 .score-label {
-  font-size: 24rpx;
+  font-size: 28rpx;
   color: #999999;
   font-weight: 600;
 }
 
 .score-number {
-  font-size: 72rpx;
+  font-size: 88rpx;
   font-weight: 900;
   font-family: 'DIN Alternate', 'Helvetica', sans-serif;
   line-height: 1;
@@ -633,7 +644,7 @@ export default {
 
 .action-btn {
   position: relative;
-  height: 180rpx;
+  height: 160rpx;
   border-radius: 36rpx;
   overflow: hidden;
   box-shadow: 0 12rpx 40rpx rgba(0, 0, 0, 0.12);
@@ -708,8 +719,8 @@ export default {
 }
 
 .btn-icon-wrap {
-  width: 100rpx;
-  height: 100rpx;
+  width: 90rpx;
+  height: 90rpx;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.3);
   backdrop-filter: blur(10rpx);
@@ -731,11 +742,16 @@ export default {
 }
 
 .btn-emoji {
-  font-size: 56rpx;
+  font-size: 50rpx;
+}
+
+.btn-emoji-img {
+  width: 56rpx;
+  height: 56rpx;
 }
 
 .btn-title {
-  font-size: 36rpx;
+  font-size: 32rpx;
   font-weight: 800;
   color: #ffffff;
   text-shadow: 0 3rpx 12rpx rgba(0, 0, 0, 0.2);
@@ -745,7 +761,7 @@ export default {
 }
 
 .btn-desc {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
   display: block;
@@ -760,8 +776,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12rpx;
-  padding: 24rpx;
+  gap: 14rpx;
+  padding: 28rpx;
   background: #ffffff;
   border-radius: 32rpx;
   box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.08);
@@ -769,7 +785,7 @@ export default {
 }
 
 .hint-icon {
-  font-size: 32rpx;
+  font-size: 36rpx;
   animation: point 1.5s ease-in-out infinite;
 }
 
@@ -783,7 +799,7 @@ export default {
 }
 
 .hint-text {
-  font-size: 26rpx;
+  font-size: 28rpx;
   color: #999999;
   font-weight: 600;
 }
@@ -934,6 +950,12 @@ export default {
 
 .type-emoji {
   font-size: 56rpx;
+  animation: emoji-bounce 2s ease-in-out infinite;
+}
+
+.type-emoji-img {
+  width: 64rpx;
+  height: 64rpx;
   animation: emoji-bounce 2s ease-in-out infinite;
 }
 
