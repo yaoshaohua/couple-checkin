@@ -1,0 +1,21 @@
+{
+  "name": "couple-checkin",
+  "version": "1.0.0",
+  "description": "情侣打卡小程序",
+  "main": "main.js",
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "build:mp-weixin": "uni build -p mp-weixin"
+  },
+  "dependencies": {
+    "vue": "^2.6.14",
+    "vuex": "^3.6.2"
+  },
+  "devDependencies": {
+    "@dcloudio/types": "^3.4.8",
+    "@dcloudio/uni-cli-shared": "^3.0.0-alpha-3090020230817001",
+    "@dcloudio/uni-mp-weixin": "^3.0.0-alpha-3090020230817001",
+    "@dcloudio/vite-plugin-uni": "^3.0.0-alpha-3090020230817001",
+    "vite": "^4.4.9"
+  }
+}

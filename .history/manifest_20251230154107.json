@@ -1,0 +1,26 @@
+{
+  "$schema": "https://raw.githubusercontent.com/uni-helper/uni-app-schemas/main/manifest.json",
+  "name": "情侣打卡",
+  "appid": "",
+  "description": "记录情侣间的点滴，用爱意和怨气积分趣味互动",
+  "versionName": "1.0.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "mp-weixin": {
+    "appid": "wx78bc27ae27e2e973",
+    "setting": {
+      "urlCheck": false,
+      "minified": true
+    },
+    "usingComponents": true,
+    "permission": {
+      "scope.userLocation": {
+        "desc": "用于记录打卡位置"
+      }
+    }
+  },
+  "uniStatistics": {
+    "enable": false
+  },
+  "vueVersion": "2"
+}
