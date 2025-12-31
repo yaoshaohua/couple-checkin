@@ -19,7 +19,7 @@
     {
       "path": "pages/task/task",
       "style": {
-        "navigationBarTitleText": "任务兑换",
+        "navigationBarTitleText": "福利兑换",
         "navigationBarBackgroundColor": "#FF6B9D",
         "navigationBarTextStyle": "white"
       }
@@ -61,7 +61,7 @@
         "pagePath": "pages/task/task",
         "iconPath": "static/tabbar/task.png",
         "selectedIconPath": "static/tabbar/task-active.png",
-        "text": "任务"
+        "text": "福利"
       },
       {
         "pagePath": "pages/mine/mine",

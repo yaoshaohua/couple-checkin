@@ -16,7 +16,7 @@
 
     <!-- 页面标题 -->
     <view class="page-header">
-      <text class="page-title">📝 记录时光</text>
+      <text class="page-title">记录时光</text>
       <text class="page-subtitle">✨ 每一刻都值得珍藏 ✨</text>
     </view>
 
@@ -26,7 +26,9 @@
         :class="['filter-stats-item', filterType === 'all' ? 'active' : '']"
         @click="filterType = 'all'"
       >
-        <view class="item-icon">📚</view>
+        <view class="item-icon">
+          <image src="/static/images/peace.png" mode="aspectFit"></image>
+        </view>
         <view class="item-content">
           <text class="item-label">全部记录</text>
           <text class="item-value">{{ records.length }}</text>
@@ -36,7 +38,9 @@
         :class="['filter-stats-item', filterType === 'love' ? 'love-active' : '']"
         @click="filterType = 'love'"
       >
-        <view class="item-icon love-icon">❤️</view>
+        <view class="item-icon love-icon">
+          <image src="/static/images/glad.png" mode="aspectFit"></image>
+        </view>
         <view class="item-content">
           <text class="item-label">爱意记录</text>
           <text class="item-value love">{{ loveRecords.length }}</text>
@@ -46,7 +50,9 @@
         :class="['filter-stats-item', filterType === 'resent' ? 'resent-active' : '']"
         @click="filterType = 'resent'"
       >
-        <view class="item-icon resent-icon">😤</view>
+        <view class="item-icon resent-icon">
+          <image src="/static/images/angry.png" mode="aspectFit"></image>
+        </view>
         <view class="item-content">
           <text class="item-label">怨气记录</text>
           <text class="item-value resent">{{ resentRecords.length }}</text>
@@ -425,8 +431,11 @@ export default {
 }
 
 .item-icon {
-  font-size: 48rpx;
   flex-shrink: 0;
+}
+.item-icon image {
+  width: 48rpx;
+  height: 48rpx;
 }
 
 .love-icon {

@@ -1,26 +1,15 @@
 <template>
   <view class="container">
-    <!-- 用户信息卡片 -->
-    <view class="user-card card">
-      <view class="user-avatars">
-        <view class="avatar-item">
-          <view class="avatar">👨</view>
-          <text class="avatar-name">{{ userInfo.myName }}</text>
-        </view>
-        <view class="heart-icon">💕</view>
-        <view class="avatar-item">
-          <view class="avatar">👩</view>
-          <text class="avatar-name">{{ userInfo.partnerName }}</text>
-        </view>
-      </view>
-      <view class="edit-btn" @click="showEditDialog = true">
-        <text class="edit-icon">✏️</text>
-        <text class="edit-text">编辑昵称</text>
-      </view>
+    <!-- 页面标题 -->
+    <view class="page-header">
+      <text class="page-title">我的主页</text>
+      <text class="page-subtitle">💕 记录我们的爱 💕</text>
     </view>
 
+
+
     <!-- 数据统计 -->
-    <view class="stats-section card">
+    <view class="stats-section">
       <view class="stats-title">数据统计</view>
       <view class="stats-grid">
         <view class="stat-item">
@@ -44,7 +33,7 @@
 
     <!-- 功能菜单 -->
     <view class="menu-section">
-      <view class="menu-item card" @click="exportData">
+      <view class="menu-item" @click="exportData">
         <view class="menu-left">
           <text class="menu-icon">📊</text>
           <text class="menu-text">导出数据</text>
@@ -52,7 +41,7 @@
         <text class="menu-arrow">→</text>
       </view>
 
-      <view class="menu-item card" @click="clearData">
+      <view class="menu-item" @click="clearData">
         <view class="menu-left">
           <text class="menu-icon">🗑️</text>
           <text class="menu-text">清空数据</text>
@@ -60,7 +49,7 @@
         <text class="menu-arrow">→</text>
       </view>
 
-      <view class="menu-item card" @click="showAbout">
+      <view class="menu-item" @click="showAbout">
         <view class="menu-left">
           <text class="menu-icon">ℹ️</text>
           <text class="menu-text">关于我们</text>
@@ -74,40 +63,6 @@
       <text class="version-text">情侣打卡 v1.0.0</text>
       <text class="version-tip">记录爱的每一刻 💕</text>
     </view>
-
-    <!-- 编辑昵称弹窗 -->
-    <view v-if="showEditDialog" class="dialog-mask" @click="hideEditDialog">
-      <view class="dialog-content" @click.stop>
-        <view class="dialog-title">编辑昵称</view>
-        
-        <view class="dialog-form">
-          <view class="form-item">
-            <text class="form-label">我的昵称</text>
-            <input 
-              v-model="editMyName" 
-              class="form-input" 
-              placeholder="输入你的昵称"
-              maxlength="10"
-            />
-          </view>
-
-          <view class="form-item">
-            <text class="form-label">TA的昵称</text>
-            <input 
-              v-model="editPartnerName" 
-              class="form-input" 
-              placeholder="输入TA的昵称"
-              maxlength="10"
-            />
-          </view>
-        </view>
-
-        <view class="dialog-btns">
-          <button class="dialog-btn cancel-btn" @click="hideEditDialog">取消</button>
-          <button class="dialog-btn confirm-btn" @click="confirmEdit">保存</button>
-        </view>
-      </view>
-    </view>
   </view>
 </template>
 
@@ -117,9 +72,6 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
-      showEditDialog: false,
-      editMyName: '',
-      editPartnerName: ''
     }
   },
 
@@ -128,46 +80,6 @@ export default {
   },
 
   methods: {
-    showEditDialog() {
-      this.editMyName = this.userInfo.myName
-      this.editPartnerName = this.userInfo.partnerName
-      this.showEditDialog = true
-    },
-
-    hideEditDialog() {
-      this.showEditDialog = false
-    },
-
-    confirmEdit() {
-      if (!this.editMyName.trim()) {
-        uni.showToast({
-          title: '请输入你的昵称',
-          icon: 'none'
-        })
-        return
-      }
-
-      if (!this.editPartnerName.trim()) {
-        uni.showToast({
-          title: '请输入TA的昵称',
-          icon: 'none'
-        })
-        return
-      }
-
-      this.$store.dispatch('updateUserInfo', {
-        myName: this.editMyName.trim(),
-        partnerName: this.editPartnerName.trim()
-      })
-
-      uni.showToast({
-        title: '保存成功',
-        icon: 'success'
-      })
-
-      this.hideEditDialog()
-    },
-
     exportData() {
       uni.showModal({
         title: '导出数据',
@@ -220,88 +132,55 @@ export default {
 </script>
 
 <style scoped>
-.user-card {
-  padding: 40rpx;
-  margin-bottom: 20rpx;
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
-  color: #ffffff;
-}
-
-.user-avatars {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 25rpx;
-}
-
-.avatar-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.avatar {
-  width: 120rpx;
-  height: 120rpx;
-  background: rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 60rpx;
-  margin-bottom: 10rpx;
-  border: 4rpx solid rgba(255, 255, 255, 0.5);
-}
-
-.avatar-name {
-  font-size: 28rpx;
-  font-weight: 500;
-}
-
-.heart-icon {
-  font-size: 48rpx;
-  margin: 0 30rpx;
-  animation: heartbeat 1.5s ease-in-out infinite;
-}
-
-@keyframes heartbeat {
-  0%, 100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.2);
-  }
-}
-
-.edit-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 15rpx 30rpx;
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 50rpx;
-  border: 2rpx solid rgba(255, 255, 255, 0.5);
-}
-
-.edit-icon {
-  font-size: 24rpx;
-  margin-right: 8rpx;
-}
-
-.edit-text {
-  font-size: 24rpx;
-}
-
-.stats-section {
+.container {
+  min-height: 100vh;
+  background: linear-gradient(180deg, #FFF5F8 0%, #FFFFFF 50%, #FFF5F8 100%);
   padding: 30rpx;
-  margin-bottom: 20rpx;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* 页面标题 */
+.page-header {
+  text-align: center;
+  padding: 20rpx 0 40rpx;
+  position: relative;
+  z-index: 1;
+}
+
+.page-title {
+  font-size: 44rpx;
+  font-weight: 800;
+  color: #FF91A4;
+  margin-bottom: 10rpx;
+  display: block;
+}
+
+.page-subtitle {
+  font-size: 24rpx;
+  color: #FFB8C3;
+  display: block;
+}
+
+
+
+/* 数据统计 */
+.stats-section {
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 30rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.06);
+  position: relative;
+  z-index: 1;
 }
 
 .stats-title {
   font-size: 28rpx;
-  font-weight: bold;
+  font-weight: 600;
   color: #333333;
   margin-bottom: 20rpx;
+  text-align: center;
 }
 
 .stats-grid {
@@ -314,21 +193,25 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 15rpx 0;
 }
 
 .stat-value {
-  font-size: 36rpx;
-  font-weight: bold;
+  font-size: 34rpx;
+  font-weight: 800;
   color: #333333;
-  margin-bottom: 8rpx;
+  margin-bottom: 6rpx;
+  font-family: 'DIN Alternate', sans-serif;
 }
 
 .stat-value.love {
-  color: #FF6B9D;
+  color: #FF91A4;
+  text-shadow: 0 2rpx 6rpx rgba(255, 145, 164, 0.2);
 }
 
 .stat-value.resent {
-  color: #1890FF;
+  color: #64B5F6;
+  text-shadow: 0 2rpx 6rpx rgba(100, 181, 246, 0.2);
 }
 
 .stat-label {
@@ -336,135 +219,73 @@ export default {
   color: #999999;
 }
 
+/* 功能菜单 */
 .menu-section {
   display: flex;
   flex-direction: column;
-  gap: 15rpx;
+  gap: 16rpx;
+  margin-bottom: 40rpx;
+  position: relative;
+  z-index: 1;
 }
 
 .menu-item {
+  background: #ffffff;
+  border-radius: 24rpx;
+  padding: 28rpx 30rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 30rpx;
+  box-shadow: 0 6rpx 20rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .menu-item:active {
-  background: #F8F8F8;
+  transform: scale(0.98);
+  background: #FFF0F5;
+  box-shadow: 0 4rpx 12rpx rgba(255, 145, 164, 0.15);
 }
 
 .menu-left {
   display: flex;
   align-items: center;
+  gap: 20rpx;
 }
 
 .menu-icon {
   font-size: 36rpx;
-  margin-right: 15rpx;
 }
 
 .menu-text {
   font-size: 28rpx;
   color: #333333;
+  font-weight: 500;
 }
 
 .menu-arrow {
-  font-size: 28rpx;
+  font-size: 26rpx;
   color: #CCCCCC;
 }
 
+/* 版本信息 */
 .version-info {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 60rpx;
-  padding-bottom: 40rpx;
+  text-align: center;
+  padding: 20rpx 0;
+  position: relative;
+  z-index: 1;
 }
 
 .version-text {
   font-size: 24rpx;
   color: #999999;
-  margin-bottom: 10rpx;
+  display: block;
+  margin-bottom: 8rpx;
 }
 
 .version-tip {
   font-size: 22rpx;
-  color: #CCCCCC;
-}
-
-/* 弹窗样式 */
-.dialog-mask {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.dialog-content {
-  width: 600rpx;
-  background: #ffffff;
-  border-radius: 20rpx;
-  padding: 40rpx;
-}
-
-.dialog-title {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333333;
-  text-align: center;
-  margin-bottom: 30rpx;
-}
-
-.dialog-form {
-  margin-bottom: 30rpx;
-}
-
-.form-item {
-  margin-bottom: 25rpx;
-}
-
-.form-label {
-  font-size: 28rpx;
-  color: #333333;
+  color: #FFB8C3;
   display: block;
-  margin-bottom: 15rpx;
-}
-
-.form-input {
-  width: 100%;
-  padding: 20rpx;
-  background: #F5F5F5;
-  border-radius: 10rpx;
-  font-size: 28rpx;
-  box-sizing: border-box;
-}
-
-.dialog-btns {
-  display: flex;
-  gap: 20rpx;
-}
-
-.dialog-btn {
-  flex: 1;
-  padding: 25rpx;
-  border-radius: 50rpx;
-  font-size: 28rpx;
-  border: none;
-}
-
-.cancel-btn {
-  background: #F5F5F5;
-  color: #666666;
-}
-
-.confirm-btn {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
-  color: #ffffff;
 }
 </style>
