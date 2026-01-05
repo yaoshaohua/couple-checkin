@@ -22,22 +22,16 @@
 
     <!-- 筛选与统计一体化 -->
     <view class="filter-stats-container">
-      <view 
-        :class="['filter-stats-item', filterType === 'all' ? 'active' : '']"
-        @click="filterType = 'all'"
-      >
+      <view :class="['filter-stats-item', filterType === 'all' ? 'active' : '']" @click="filterType = 'all'">
         <view class="item-icon">
           <image src="/static/images/peace.png" mode="aspectFit"></image>
         </view>
         <view class="item-content">
           <text class="item-label">全部记录</text>
-          <text class="item-value">{{ records.length }}</text>
+          <text class="item-value">{{ filteredRecords.length }}</text>
         </view>
       </view>
-      <view 
-        :class="['filter-stats-item', filterType === 'love' ? 'love-active' : '']"
-        @click="filterType = 'love'"
-      >
+      <view :class="['filter-stats-item', filterType === 'love' ? 'love-active' : '']" @click="filterType = 'love'">
         <view class="item-icon love-icon">
           <image src="/static/images/glad.png" mode="aspectFit"></image>
         </view>
@@ -46,10 +40,7 @@
           <text class="item-value love">{{ loveRecords.length }}</text>
         </view>
       </view>
-      <view 
-        :class="['filter-stats-item', filterType === 'resent' ? 'resent-active' : '']"
-        @click="filterType = 'resent'"
-      >
+      <view :class="['filter-stats-item', filterType === 'resent' ? 'resent-active' : '']" @click="filterType = 'resent'">
         <view class="item-icon resent-icon">
           <image src="/static/images/angry.png" mode="aspectFit"></image>
         </view>
@@ -79,12 +70,7 @@
     </view>
 
     <view v-else class="record-list">
-      <view 
-        v-for="(record, index) in filteredRecords" 
-        :key="record.id"
-        class="record-card base-card"
-        :style="{ animationDelay: index * 0.1 + 's' }"
-      >
+      <view v-for="(record, index) in filteredRecords" :key="record.id" class="record-card base-card" :style="{ animationDelay: index * 0.1 + 's' }">
         <view class="card-glow" :class="record.type === 'love' ? 'love-glow' : 'resent-glow'"></view>
         <view class="card-inner">
           <view class="record-header">
@@ -94,7 +80,7 @@
               </view>
               <view class="type-info">
                 <text class="type-text">{{ record.type === 'love' ? '爱意记录' : '怨气记录' }}</text>
-                <text class="type-time">{{ formatTime(record.time) }}</text>
+                <text class="type-time">{{ formatTime(record.createTime) }}</text>
               </view>
             </view>
             <view class="score-badge" :class="record.type === 'love' ? 'love-score' : 'resent-score'">
@@ -119,33 +105,49 @@
 </template>
 
 <script>
-import { mapState, mapGetters } from 'vuex'
 import { formatTime } from '../../utils/index'
 
 export default {
   data() {
     return {
       filterType: 'all', // all, love, resent
-      loadMoreText: '已加载全部'
+      loadMoreText: '已加载全部',
+      filteredRecords: []
     }
   },
 
   computed: {
-    ...mapState(['records']),
-    ...mapGetters(['loveRecords', 'resentRecords']),
-
-    filteredRecords() {
-      if (this.filterType === 'all') {
-        return this.records
-      } else if (this.filterType === 'love') {
-        return this.loveRecords
-      } else {
-        return this.resentRecords
-      }
+    loveRecords() {
+      return this.filteredRecords.filter((record) => record.type === 'love')
+    },
+    resentRecords() {
+      return this.filteredRecords.filter((record) => record.type === 'resent')
     }
   },
 
+  onLoad() {
+    this.getRecords()
+  },
+
   methods: {
+    async getRecords() {
+      try {
+        const res = await wx.cloud.callFunction({
+          name: 'getRecords',
+          data: { type: this.filterType }
+        })
+
+        if (res.result.code === 200) {
+          this.filteredRecords = res.result.data
+        } else {
+          this.filteredRecords = []
+        }
+      } catch (err) {
+        console.error('直接查询失败：', err)
+        this.filteredRecords = []
+      }
+    },
+
     formatTime(time) {
       return formatTime(time)
     },
@@ -162,7 +164,7 @@ export default {
 <style scoped>
 .container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFE8F0 0%, #FFF5F8 30%, #FFFBFC 100%);
+  background: linear-gradient(180deg, #ffe8f0 0%, #fff5f8 30%, #fffbfc 100%);
   padding: 24rpx 24rpx 120rpx;
   position: relative;
   overflow-x: hidden;
@@ -274,7 +276,8 @@ export default {
 }
 
 @keyframes bubble {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.15;
   }
@@ -285,7 +288,8 @@ export default {
 }
 
 @keyframes twinkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1) rotate(0deg);
   }
@@ -296,7 +300,8 @@ export default {
 }
 
 @keyframes float-heart {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) scale(1);
     opacity: 0.6;
   }
@@ -318,7 +323,7 @@ export default {
   display: block;
   font-size: 48rpx;
   font-weight: 900;
-  background: linear-gradient(135deg, #FF6B9D 0%, #FF9EC4 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff9ec4 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -413,20 +418,20 @@ export default {
 }
 
 .filter-stats-item.active {
-  background: linear-gradient(135deg, #FFD6E7 0%, #FFC1DC 100%);
-  border-color: #FF6B9D;
+  background: linear-gradient(135deg, #ffd6e7 0%, #ffc1dc 100%);
+  border-color: #ff6b9d;
   box-shadow: 0 12rpx 36rpx rgba(255, 107, 157, 0.25);
 }
 
 .filter-stats-item.love-active {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
-  border-color: #FF6B9D;
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffa07a 100%);
+  border-color: #ff6b9d;
   box-shadow: 0 12rpx 36rpx rgba(255, 107, 157, 0.3);
 }
 
 .filter-stats-item.resent-active {
-  background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
-  border-color: #64B5F6;
+  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+  border-color: #64b5f6;
   box-shadow: 0 12rpx 36rpx rgba(100, 181, 246, 0.3);
 }
 
@@ -447,7 +452,8 @@ export default {
 }
 
 @keyframes heartbeat {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -456,7 +462,8 @@ export default {
 }
 
 @keyframes shake {
-  0%, 100% {
+  0%,
+  100% {
     transform: rotate(0deg);
   }
   25% {
@@ -490,14 +497,14 @@ export default {
 }
 
 .item-value.love {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffa07a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .item-value.resent {
-  background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -510,7 +517,7 @@ export default {
 }
 
 .filter-stats-item.active .item-value {
-  color: #FF6B9D;
+  color: #ff6b9d;
 }
 
 .filter-stats-item.love-active .item-value,
@@ -548,33 +555,34 @@ export default {
 .icon-1 {
   top: 20%;
   left: 25%;
-  color: #FF6B9D;
+  color: #ff6b9d;
   animation-delay: 0s;
 }
 
 .icon-2 {
   top: 60%;
   right: 20%;
-  color: #64B5F6;
+  color: #64b5f6;
   animation-delay: 1s;
 }
 
 .icon-3 {
   top: 40%;
   left: 70%;
-  color: #FFA07A;
+  color: #ffa07a;
   animation-delay: 2s;
 }
 
 .icon-4 {
   top: 70%;
   left: 40%;
-  color: #FFD700;
+  color: #ffd700;
   animation-delay: 1.5s;
 }
 
 @keyframes float-icon {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
   }
   50% {
@@ -596,7 +604,8 @@ export default {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -620,7 +629,7 @@ export default {
 
 .empty-btn {
   padding: 24rpx 80rpx;
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffa07a 100%);
   color: #ffffff;
   border-radius: 50rpx;
   font-size: 32rpx;
@@ -647,7 +656,8 @@ export default {
   0% {
     left: -100%;
   }
-  50%, 100% {
+  50%,
+  100% {
     left: 100%;
   }
 }
@@ -709,11 +719,11 @@ export default {
 }
 
 .love-type .type-badge {
-  background: linear-gradient(135deg, #FFD6E7 0%, #FFC1DC 100%);
+  background: linear-gradient(135deg, #ffd6e7 0%, #ffc1dc 100%);
 }
 
 .resent-type .type-badge {
-  background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%);
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
 }
 
 .type-icon {
@@ -749,11 +759,11 @@ export default {
 }
 
 .score-badge.love-score {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffa07a 100%);
 }
 
 .score-badge.resent-score {
-  background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
 }
 
 .score-icon {
@@ -770,13 +780,13 @@ export default {
 .record-body {
   margin-bottom: 0;
   padding: 20rpx 24rpx;
-  background: linear-gradient(135deg, #FFFBFC 0%, #FFF5F8 100%);
+  background: linear-gradient(135deg, #fffbfc 0%, #fff5f8 100%);
   border-radius: 20rpx;
   border: 2rpx solid rgba(255, 107, 157, 0.1);
 }
 
 .record-card:nth-child(even) .record-body {
-  background: linear-gradient(135deg, #F8FBFF 0%, #F0F7FF 100%);
+  background: linear-gradient(135deg, #f8fbff 0%, #f0f7ff 100%);
   border-color: rgba(100, 181, 246, 0.1);
 }
 
@@ -806,7 +816,7 @@ export default {
 
 .load-text {
   font-size: 26rpx;
-  color: #CCCCCC;
+  color: #cccccc;
   font-weight: 500;
 }
 </style>

@@ -97,21 +97,15 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-
 export default {
   data() {
     return {
-      showDialog: false,
-      customType: 'love',
-      customReason: '',
-      customScore: 1
+      loveScore: 0,
+      resentScore: 0
     }
   },
 
   computed: {
-    ...mapState(['loveScore', 'resentScore', 'userInfo']),
-    
     marriedDays() {
       const weddingDate = new Date('2025-06-07')
       const today = new Date()
@@ -119,11 +113,11 @@ export default {
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24))
       return diffDays >= 0 ? diffDays : 0
     },
-    
+
     weddingDate() {
       return '2025.06.07'
     },
-    
+
     currentDate() {
       const date = new Date()
       const year = date.getFullYear()
@@ -133,17 +127,65 @@ export default {
       const weekDay = weekDays[date.getDay()]
       return `${year}年${month}月${day}日 星期${weekDay}`
     },
-    
+
     loveTypeClass() {
       return this.customType === 'love' ? 'type-item active' : 'type-item'
     },
-    
+
     resentTypeClass() {
       return this.customType === 'resent' ? 'type-item active' : 'type-item'
-    },
+    }
+  },
+
+  onLoad() {
+    this.getStatistics()
   },
 
   methods: {
+    async getStatistics() {
+      try {
+        uni.showLoading({
+          title: '加载中...',
+          mask: true
+        })
+
+        const [loveRes, resentRes] = await Promise.all([
+          wx.cloud.callFunction({
+            name: 'getRecords',
+            data: { type: 'love' }
+          }),
+          wx.cloud.callFunction({
+            name: 'getRecords',
+            data: { type: 'resent' }
+          })
+        ])
+
+        if (loveRes.result.code !== 200 || resentRes.result.code !== 200) {
+          uni.showToast({
+            title: '加载失败',
+            icon: 'none'
+          })
+          return
+        }
+
+        const loveScore = loveRes.result.data.reduce((sum, item) => sum + (item.score || 0), 0)
+        const resentScore = resentRes.result.data.reduce((sum, item) => sum + (item.score || 0), 0)
+
+        this.loveScore = loveScore
+        this.resentScore = resentScore
+
+        console.log('统计数据：', { loveScore, resentScore })
+      } catch (err) {
+        console.error('获取统计数据失败：', err)
+        uni.showToast({
+          title: '加载失败',
+          icon: 'none'
+        })
+      } finally {
+        uni.hideLoading()
+      }
+    },
+
     quickLove() {
       uni.showModal({
         title: '开心时刻 💕',
@@ -155,23 +197,12 @@ export default {
         success: (res) => {
           if (res.confirm) {
             const reason = res.content && res.content.trim() ? res.content : '开心打卡'
-            
-            this.$store.dispatch('addLoveScore', {
-              score: 1,
-              reason: reason
-            })
-            
-            uni.showToast({
-              title: '❤️ +1',
-              icon: 'none',
-              duration: 1000
-            })
-            uni.vibrateShort()
+            this.addRecord(reason, 'love')
           }
         }
       })
     },
-    
+
     quickResent() {
       uni.showModal({
         title: '生气时刻 😤',
@@ -183,21 +214,52 @@ export default {
         success: (res) => {
           if (res.confirm) {
             const reason = res.content && res.content.trim() ? res.content : '生气记录'
-            
-            this.$store.dispatch('addResentScore', {
-              score: 1,
-              reason: reason
-            })
-            
-            uni.showToast({
-              title: '😤 +1',
-              icon: 'none',
-              duration: 1000
-            })
-            uni.vibrateShort()
+            this.addRecord(reason, 'resent')
           }
         }
       })
+    },
+
+    async addRecord(reason, type) {
+      try {
+        const record = {
+          type: type,
+          reason: reason,
+          score: 1,
+          createTime: new Date()
+        }
+
+        const res = await wx.cloud.callFunction({
+          name: 'addRecord',
+          data: record
+        })
+
+        if (res.result.code !== 200) {
+          uni.showToast({
+            title: '记录失败',
+            icon: 'none'
+          })
+          return
+        }
+
+        if (type === 'love') {
+          this.loveScore += 1
+        } else if (type === 'resent') {
+          this.resentScore += 1
+        }
+        uni.showToast({
+          title: `${type === 'love' ? '❤️' : '😤'} +1`,
+          icon: 'none',
+          duration: 1000
+        })
+        uni.vibrateShort()
+      } catch (err) {
+        console.error('插入记录失败：', err)
+        uni.showToast({
+          title: '记录失败',
+          icon: 'none'
+        })
+      }
     }
   }
 }
@@ -206,7 +268,7 @@ export default {
 <style scoped>
 .container {
   min-height: 100vh;
-  background: linear-gradient(180deg, #FFE8F0 0%, #FFF5F8 30%, #FFFBFC 100%);
+  background: linear-gradient(180deg, #ffe8f0 0%, #fff5f8 30%, #fffbfc 100%);
   padding-bottom: 120rpx;
   overflow-x: hidden;
   width: 100%;
@@ -219,7 +281,7 @@ export default {
   margin: 24rpx 28rpx 32rpx;
   border-radius: 36rpx;
   overflow: hidden;
-  background: linear-gradient(135deg, #FF6B9D 0%, #FF9EC4 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ff9ec4 100%);
   box-shadow: 0 12rpx 36rpx rgba(255, 107, 157, 0.3);
 }
 
@@ -289,7 +351,8 @@ export default {
 }
 
 @keyframes bubble {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
     opacity: 0.15;
   }
@@ -300,7 +363,8 @@ export default {
 }
 
 @keyframes twinkle {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 0.4;
     transform: scale(1) rotate(0deg);
   }
@@ -449,7 +513,8 @@ export default {
 }
 
 @keyframes bounce {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {
@@ -458,11 +523,11 @@ export default {
 }
 
 .love-circle {
-  background: linear-gradient(135deg, #FFD6E7 0%, #FFC1DC 100%);
+  background: linear-gradient(135deg, #ffd6e7 0%, #ffc1dc 100%);
 }
 
 .resent-circle {
-  background: linear-gradient(135deg, #D4EDFC 0%, #C1E5FC 100%);
+  background: linear-gradient(135deg, #d4edfc 0%, #c1e5fc 100%);
 }
 
 .big-icon {
@@ -497,14 +562,14 @@ export default {
 }
 
 .love-number {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA07A 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffa07a 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .resent-number {
-  background: linear-gradient(135deg, #64B5F6 0%, #42A5F5 100%);
+  background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -533,11 +598,11 @@ export default {
 }
 
 .love-btn {
-  background: linear-gradient(135deg, #FF6B9D 0%, #FFA9CE 50%, #FFB6D9 100%);
+  background: linear-gradient(135deg, #ff6b9d 0%, #ffa9ce 50%, #ffb6d9 100%);
 }
 
 .resent-btn {
-  background: linear-gradient(135deg, #64B5F6 0%, #90CAF9 50%, #A5D6FA 100%);
+  background: linear-gradient(135deg, #64b5f6 0%, #90caf9 50%, #a5d6fa 100%);
 }
 
 .btn-bg {
@@ -574,7 +639,8 @@ export default {
 }
 
 @keyframes float-icon {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0) rotate(0deg);
     opacity: 0.2;
   }
@@ -609,7 +675,8 @@ export default {
 }
 
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
@@ -657,7 +724,7 @@ export default {
   background: #ffffff;
   border-radius: 32rpx;
   box-shadow: 0 8rpx 28rpx rgba(0, 0, 0, 0.08);
-  border: 3rpx dashed #FFD6E7;
+  border: 3rpx dashed #ffd6e7;
 }
 
 .hint-icon {
@@ -666,7 +733,8 @@ export default {
 }
 
 @keyframes point {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0);
   }
   50% {

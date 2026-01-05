@@ -13,11 +13,8 @@
             "minified" : true
         },
         "usingComponents" : true,
-        "permission" : {
-            "scope.userLocation" : {
-                "desc" : "用于记录打卡位置"
-            }
-        }
+        "permission" : {},
+        "cloudfunctionRoot": "cloudfunctions/"
     },
     "uniStatistics" : {
         "enable" : false
